@@ -42,8 +42,6 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
-    logout();
-    window.location.reload();
   };
 
   return (
@@ -88,29 +86,32 @@ export default function AccountPopover() {
           },
         }}
       >
-        <Box sx={{ my: 1.5, px: 2 }}>
+        {/* <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
             {account.displayName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
             {account.email}
           </Typography>
-        </Box>
+        </Box> */}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {MENU_OPTIONS.map((option) => (
+        {/* {MENU_OPTIONS.map((option) => (
           <MenuItem key={option.label} onClick={handleClose}>
             {option.label}
           </MenuItem>
-        ))}
+        ))} */}
 
         <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
 
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={() => {
+            logout();
+            window.location.reload();
+          }}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

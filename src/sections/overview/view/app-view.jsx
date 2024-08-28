@@ -117,7 +117,7 @@ export default function AppView() {
             }}
           />
         </Grid>
-
+{/* 
         <Grid xs={12} md={6} lg={8}>
           <AppConversionRates
             title="Conversion Rates"
@@ -223,7 +223,7 @@ export default function AppView() {
               { id: '5', name: 'Sprint Showcase' },
             ]}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );
