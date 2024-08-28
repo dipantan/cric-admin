@@ -8,7 +8,7 @@ export default function PlayersPage() {
   return (
     <>
       <Helmet>
-        <title> Players | Minimal UI </title>
+        <title> Players | Cricexchange </title>
       </Helmet>
 
       <PlayersView />
