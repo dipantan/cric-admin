@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -16,27 +17,70 @@ import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
+import useAuthStore from 'src/store/authStore';
 
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
   const theme = useTheme();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const login = useAuthStore((state) => state.login);
+  const error = useAuthStore((state) => state.error);
+  const clearError = useAuthStore((state) => state.clearError); // Assuming you have this action
 
   const router = useRouter();
-
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick = () => {
-    router.push('/dashboard');
+  useEffect(() => {
+    if (error) {
+      toast.error(error, {
+        autoClose: 2000,
+        pauseOnHover: false,
+        closeOnClick: true,
+        onClose: clearError,
+        onOpen: () => {
+          clearError();
+        },
+      });
+    }
+  }, [error]);
+
+  const handleClick = async () => {
+    if (!email || !password) {
+      toast.error('Please fill in email and password', {
+        autoClose: 2000,
+        pauseOnHover: false,
+        closeOnClick: true,
+      });
+    } else {
+      setLoading(true);
+      await login(email, password);
+      setLoading(false);
+      router.push('/');
+    }
+  };
+
+  const checkValidEmail = () => {
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   };
 
   const renderForm = (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField
+          label="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={email && !checkValidEmail()}
+          helperText={email && !checkValidEmail() ? 'Invalid email address' : ''}
+        />
 
         <TextField
-          name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
@@ -48,14 +92,16 @@ export default function LoginView() {
               </InputAdornment>
             ),
           }}
+          value={password}
+          error={password && password.length < 4}
+          onChange={(e) => setPassword(e.target.value)}
+          helperText={
+            password && password.length < 4 ? 'Password must be at least 4 characters' : ''
+          }
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }}>
-        {/* <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link> */}
-      </Stack>
+      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 2 }} />
 
       <LoadingButton
         fullWidth
@@ -64,6 +110,8 @@ export default function LoginView() {
         variant="contained"
         color="inherit"
         onClick={handleClick}
+        loading={loading}
+        disabled={!checkValidEmail() || !password || password.length < 4}
       >
         Login
       </LoadingButton>
@@ -96,52 +144,11 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4" align='center'>Sign in to admin</Typography>
-
-          <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            {/* Don’t have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-              Get started
-            </Link> */}
+          <Typography variant="h4" align="center">
+            Sign in to admin
           </Typography>
 
-          {/* <Stack direction="row" spacing={2}>
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:google-fill" color="#DF3E30" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:facebook-fill" color="#1877F2" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              OR
-            </Typography>
-          </Divider> */}
+          <Typography variant="body2" sx={{ mt: 2, mb: 5 }} />
 
           {renderForm}
         </Card>
