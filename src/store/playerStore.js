@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import instance from 'src/helper/instance';
-import { devtools } from 'zustand/middleware';
 
 const usePlayerStore = create((set) => ({
   players: [],
@@ -25,7 +24,7 @@ const usePlayerStore = create((set) => ({
   createRecommendedPlayer: async (id) => {
     try {
       const { data } = await instance.post('/player/create-recommended-players', { id });
-      set({ players: data.message });
+      set({ message: data.message });
     } catch (error) {
       set({ error: error.response?.data?.message || 'No players found' });
     }
@@ -33,7 +32,7 @@ const usePlayerStore = create((set) => ({
   createTopPlayers: async (id, type) => {
     try {
       const { data } = await instance.post('/player/create-top-players', { id, type });
-      set({ players: data.message });
+      set({ message: data.message });
     } catch (error) {
       set({ error: error.response?.data?.message || 'No players found' });
     }
@@ -55,6 +54,7 @@ const usePlayerStore = create((set) => ({
     }
   },
   clearError: () => set({ error: null }),
+  clearMessage: () => set({ message: null }),
 }));
 
 export default usePlayerStore;

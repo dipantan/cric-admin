@@ -1,26 +1,54 @@
-import SvgColor from 'src/components/svg-color';
+// import SvgColor from 'src/components/svg-color';
+import { GiCricketBat } from 'react-icons/gi';
+import { TbInvoice } from 'react-icons/tb';
+import { TbTransactionRupee } from 'react-icons/tb';
+import { GoGitPullRequest } from 'react-icons/go';
+import { FaRegUser } from 'react-icons/fa';
+import { BsGraphUp } from 'react-icons/bs';
+import { MdOutlinePriceChange } from 'react-icons/md';
 
 // ----------------------------------------------------------------------
 
-const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
-);
+// const icon = (name) => (
+//   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+// );
 
 const navConfig = [
   {
     title: 'dashboard',
     path: '/',
-    icon: icon('ic_analytics'),
+    icon: <BsGraphUp size={24} />,
   },
   {
     title: 'user',
     path: '/user',
-    icon: icon('ic_user'),
+    icon: <FaRegUser size={24} />,
   },
   {
     title: 'players',
     path: '/players',
-    icon: icon('ic_cart'),
+    icon: <GiCricketBat size={24} />,
+  },
+
+  {
+    title: 'orders',
+    path: '/orders',
+    icon: <TbInvoice size={24} />,
+  },
+  {
+    title: 'transactions',
+    path: '/transactions',
+    icon: <TbTransactionRupee size={24} />,
+  },
+  {
+    title: 'Withdrawals',
+    path: '/withdrawals',
+    icon: <GoGitPullRequest size={24} />,
+  },
+  {
+    title: 'prices',
+    path: '/prices',
+    icon: <MdOutlinePriceChange size={24} />,
   },
   // {
   //   title: 'blog',

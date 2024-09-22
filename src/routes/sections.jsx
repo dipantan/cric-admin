@@ -11,6 +11,11 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const PlayersPage = lazy(() => import('src/pages/players'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
+export const Orders = lazy(() => import('src/pages/orders'));
+export const Transactions = lazy(() => import('src/pages/transactions'));
+export const Withdrawals = lazy(() => import('src/pages/withdrawals'));
+export const Prices = lazy(() => import('src/pages/prices'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -32,6 +37,10 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'players', element: <PlayersPage /> },
         { path: 'blog', element: <BlogPage /> },
+        { path: 'orders', element: <Orders /> },
+        { path: 'transactions', element: <Transactions /> },
+        { path: 'withdrawals', element: <Withdrawals /> },
+        { path: 'prices', element: <Prices /> },
       ],
     },
     {
