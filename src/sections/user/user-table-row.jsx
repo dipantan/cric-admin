@@ -10,14 +10,17 @@ import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import { ImInfo } from 'react-icons/im';
 
 import Iconify from 'src/components/iconify';
 import avatar3 from '../../../public/assets/images/avatars/avatar_3.jpg';
+import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ selected, name, mobile, w_balance, wallet, handleClick }) {
+export default function UserTableRow({ selected, name, mobile, bank, wallet, date, handleClick }) {
   const [open, setOpen] = useState(null);
+  const [openbank, setOpenbank] = useState(false);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -27,11 +30,15 @@ export default function UserTableRow({ selected, name, mobile, w_balance, wallet
     setOpen(null);
   };
 
+  const handleOpenbank = () => {
+    setOpenbank(!openbank);
+  };
+
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
+      <TableRow hover tabIndex={-1} role="checkbox" selected={false}>
         <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+          {/* <Checkbox disableRipple checked={selected} onChange={handleClick} /> */}
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none">
@@ -45,9 +52,76 @@ export default function UserTableRow({ selected, name, mobile, w_balance, wallet
 
         <TableCell>{mobile}</TableCell>
 
-        <TableCell>{w_balance}</TableCell>
-
         <TableCell>{wallet}</TableCell>
+
+        <TableCell>
+          {bank ? (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" noWrap>
+                {bank.account_number}
+              </Typography>
+
+              <IconButton onClick={handleOpenbank}>
+                <ImInfo size={18} />
+              </IconButton>
+            </Box>
+          ) : (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+              N/A
+            </Typography>
+          )}
+        </TableCell>
+
+        <Popover
+          open={openbank}
+          // anchorEl={openbank}
+          onClose={handleOpenbank}
+          // anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+          // transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          // PaperProps={{
+          //   sx: { width: 140 },
+          // }}
+          anchorOrigin={{
+            vertical: 'center',
+            horizontal: 'center',
+          }}
+        >
+          <Box sx={{ p: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}
+              noWrap
+            >
+              <h4>Account Holder Name:</h4> {bank?.account_name}
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}
+              noWrap
+            >
+              <h4>Account Number:</h4> {bank?.account_number}
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}
+              noWrap
+            >
+              <h4>Bank Name:</h4> {bank?.bank_name}
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}
+              noWrap
+            >
+              <h4>Bank IFSC:</h4> {bank?.ifsc}
+            </Typography>
+          </Box>
+        </Popover>
+
+        <TableCell>{date}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>

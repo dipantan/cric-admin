@@ -65,6 +65,8 @@ export default function UserPage() {
   };
 
   const handleClick = (event, name) => {
+    console.log(name);
+    
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
     if (selectedIndex === -1) {
@@ -109,17 +111,17 @@ export default function UserPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Users</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        {/* <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           New User
-        </Button>
+        </Button> */}
       </Stack>
 
       <Card>
-        <UserTableToolbar
+        {/* <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
-        />
+        /> */}
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -134,9 +136,10 @@ export default function UserPage() {
                 headLabel={[
                   { id: 'name', label: 'Name' },
                   { id: 'mobile', label: 'Mobile' },
-                  { id: 'w_balance', label: 'W Balance' },
                   { id: 'wallet', label: 'Wallet' },
-                  { id: '' },
+                  { id: 'bank', label: 'Bank' },
+                  { id: 'date', label: 'Date' },
+                  { id: 'action', label: 'Action' },
                 ]}
               />
               <TableBody>
@@ -147,8 +150,11 @@ export default function UserPage() {
                       key={row.id}
                       name={row.name}
                       mobile={row.mobile}
-                      w_balance={row.w_balance}
-                      wallet={row.wallet}
+                      bank={row.bank}
+                      date={new Date(row.date).toLocaleString('en-US', {
+                        timeZone: 'Asia/Kolkata',
+                      })}
+                      wallet={Number(row.wallet).toFixed(2)}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />

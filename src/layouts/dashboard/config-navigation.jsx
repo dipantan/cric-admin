@@ -6,6 +6,7 @@ import { GoGitPullRequest } from 'react-icons/go';
 import { FaRegUser } from 'react-icons/fa';
 import { BsGraphUp } from 'react-icons/bs';
 import { MdOutlinePriceChange } from 'react-icons/md';
+import { IoImageOutline } from "react-icons/io5";
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +51,11 @@ const navConfig = [
     path: '/prices',
     icon: <MdOutlinePriceChange size={24} />,
   },
+  {
+    title: 'banners',
+    path: '/banners',
+    icon: <IoImageOutline size={24} />,
+  }
   // {
   //   title: 'blog',
   //   path: '/blog',
