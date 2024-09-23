@@ -15,11 +15,11 @@ import { IoImageOutline } from "react-icons/io5";
 // );
 
 const navConfig = [
-  {
-    title: 'dashboard',
-    path: '/',
-    icon: <BsGraphUp size={24} />,
-  },
+  // {
+  //   title: 'dashboard',
+  //   path: '/',
+  //   icon: <BsGraphUp size={24} />,
+  // },
   {
     title: 'user',
     path: '/user',
