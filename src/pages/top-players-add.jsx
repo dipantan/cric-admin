@@ -1,16 +1,10 @@
 import {
   AppBar,
-  Avatar,
   Box,
   Button,
   CircularProgress,
   Container,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
   IconButton,
-  InputBase,
   Paper,
   Table,
   TableBody,
@@ -19,15 +13,15 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import instance from 'src/helper/instance';
-import { CiSearch } from 'react-icons/ci';
+import usePlayerStore from 'src/store/playerStore';
 
-export default function Price() {
+export default function TopPlayersAddPage() {
   const [loading, setLoading] = useState(false);
   const [playersList, setPlayersList] = useState([]);
   const [playersCount, setPlayersCount] = useState(0);
@@ -35,9 +29,7 @@ export default function Price() {
     page: 0,
     rowsPerPage: 10,
   });
-  const [searchInput, setSearchInput] = useState('');
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const createTopPlayers = usePlayerStore((state) => state.createTopPlayers);
 
   const handlePageChange = (_event, newPage) => {
     console.log('New page:', newPage);
@@ -47,10 +39,6 @@ export default function Price() {
     });
   };
 
-  const toggleUpdateDialog = () => {
-    setShowUpdateDialog(!showUpdateDialog);
-  };
-
   const handleChangeRowsPerPage = (event) => {
     setController({
       ...controller,
@@ -58,17 +46,57 @@ export default function Price() {
     });
   };
 
+  const { error, clearError, message, clearMessage } = usePlayerStore((state) => state);
+
   useEffect(() => {
     getAllPlayer();
-  }, [controller.page, controller.rowsPerPage, searchInput]);
+  }, [controller.page, controller.rowsPerPage]);
+
+  useEffect(() => {
+    if (error) {
+      if (error.includes('Duplicate entry')) {
+        toast.error('This player has already been added to the top players.', {
+          autoClose: 2000,
+          pauseOnHover: false,
+          closeOnClick: true,
+          onClose: clearError,
+          onOpen: () => {
+            clearError();
+          },
+        });
+      } else {
+        toast.error(error, {
+          autoClose: 2000,
+          pauseOnHover: false,
+          closeOnClick: true,
+          onClose: clearError,
+          onOpen: () => {
+            clearError();
+          },
+        });
+      }
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (message) {
+      toast.success(message, {
+        autoClose: 2000,
+        pauseOnHover: false,
+        closeOnClick: true,
+        onClose: clearMessage,
+        onOpen: () => {
+          clearMessage();
+        },
+      });
+    }
+  }, [message]);
 
   const getAllPlayer = async () => {
     try {
       setLoading(true);
       const res = await instance.get(
-        `/player?page=${controller.page + 1}&limit=${controller.rowsPerPage}${
-          searchInput ? `&search=${searchInput}` : ''
-        }`
+        `/player?page=${controller.page + 1}&limit=${controller.rowsPerPage}`
       );
       setPlayersList(res.data.data);
       setPlayersCount(res.data.metadata.total);
@@ -79,51 +107,25 @@ export default function Price() {
     }
   };
 
-  const fetchPrice = async (id) => {
-    try {
-      const { data } = await instance.get(`/player/price/${id}`);
-      setSelectedPlayer((prev) => ({ ...prev, price: data.data.curr_price }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const updatePrice = async () => {
-    try {
-      const res = await instance.put(`/player/price/${selectedPlayer.id}`, {
-        amount: selectedPlayer.price,
-      });
-      toggleUpdateDialog();
-      await getAllPlayer();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // useEffect(() => {
-  //   console.log(selectedPlayer);
-  // }, [selectedPlayer]);
-
   return (
     <Container maxWidth="xl">
       <AppBar sx={{ position: 'relative' }}>
         <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            // onClick={toggleTopPlayerDialogClick}
+            aria-label="close"
+          >
+            {/* <IoMdClose /> */}
+          </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Update Player Prices
+            Add Top Players
           </Typography>
 
-          <Paper
-            component="form"
-            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 300 }}
-          >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search players"
-              inputProps={{ 'aria-label': 'search players' }}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-          </Paper>
+          {/* <Button autoFocus color="inherit" onClick={toggleTopPlayerDialogClick}>
+            Close
+          </Button> */}
         </Toolbar>
       </AppBar>
 
@@ -208,12 +210,17 @@ export default function Price() {
                             sx={{ p: 1 }}
                             variant="contained"
                             onClick={async () => {
-                              toggleUpdateDialog();
-                              setSelectedPlayer(player);
-                              await fetchPrice(player.id);
+                              try {
+                                await createTopPlayers(
+                                  player.id,
+                                  player.position.name.toLowerCase()
+                                );
+                              } catch (err) {
+                                console.log(err);
+                              }
                             }}
                           >
-                            Update
+                            Add
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -235,80 +242,6 @@ export default function Price() {
           />
         )}
       </Box>
-
-      <Dialog
-        open={showUpdateDialog}
-        onClose={toggleUpdateDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        style={{
-          padding: '20px',
-        }}
-      >
-        <Box>
-          <DialogTitle id="alert-dialog-title">Update Player Price</DialogTitle>
-          <DialogContent
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 2,
-              margin: 2,
-            }}
-          >
-            <Avatar
-              alt="Remy Sharp"
-              src={
-                selectedPlayer?.image_path ||
-                'https://cdn-icons-png.flaticon.com/512/1193/1193274.png'
-              }
-              sx={{ width: 100, height: 100 }}
-            />
-
-            <Box>
-              <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                {selectedPlayer?.fullname}
-              </Typography>
-              <Typography variant="body1">{selectedPlayer?.position.name}</Typography>
-              <Typography variant="body1">{selectedPlayer?.country.name}</Typography>
-              <Typography variant="body1">
-                {selectedPlayer?.gender === 'm'
-                  ? 'Male'
-                  : selectedPlayer?.gender === 'f'
-                  ? 'Female'
-                  : 'Others'}
-              </Typography>
-            </Box>
-          </DialogContent>
-
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 2,
-              margin: 2,
-            }}
-          >
-            <TextField
-              id="outlined-basic"
-              defaultValue={selectedPlayer?.price}
-              label="Outlined"
-              variant="outlined"
-              style={{ margin: '10px', padding: 0 }}
-              value={selectedPlayer?.price}
-              autoFocus
-              focused
-              type="number"
-              onChange={(e) => setSelectedPlayer({ ...selectedPlayer, price: e.target.value })}
-            />
-
-            <Button variant="contained" style={{ margin: '10px' }} onClick={updatePrice}>
-              Update
-            </Button>
-          </Box>
-        </Box>
-      </Dialog>
     </Container>
   );
 }

@@ -1,41 +1,17 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { DataGrid, useGridApiContext, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 
-import {
-  AppBar,
-  Box,
-  Button,
-  Card,
-  CircularProgress,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemText,
-  Paper,
-  Slide,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tabs,
-  Toolbar,
-} from '@mui/material';
+import { Box, Button, IconButton, Tab, Tabs } from '@mui/material';
 import { IoAdd, IoRemove } from 'react-icons/io5';
 import usePlayerStore from 'src/store/playerStore';
 import instance from 'src/helper/instance';
 import { MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import ca from 'date-fns/locale/ca/index.js';
 
 // ----------------------------------------------------------------------
 
@@ -48,36 +24,14 @@ export default function PlayersView() {
     page: 0,
     rowsPerPage: 10,
   });
-  const apiRef = useGridApiRef();
   const [selectedRows, setSelectedRows] = useState();
-
-  const handlePageChange = (event, newPage) => {
-    console.log(newPage, controller);
-
-    setController({
-      ...controller,
-      page: newPage,
-    });
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setController({
-      ...controller,
-      rowsPerPage: parseInt(event.target.value, 10),
-      // page: 1,
-    });
-  };
-
-  const [openTopPlayerDialog, setOpenTopPlayerDialog] = useState(false);
-  const [openRecommendedPlayerDialog, setOpenRecommendedPlayerDialog] = useState(false);
+  const router = useNavigate();
 
   const { error, clearError, message, clearMessage } = usePlayerStore((state) => state);
 
-  const createTopPlayers = usePlayerStore((state) => state.createTopPlayers);
   const topPlayers = usePlayerStore((state) => state.topPlayers);
   const fetchTopPlayers = usePlayerStore((state) => state.fetchTopPlayers);
 
-  const createRecommendedPlayer = usePlayerStore((state) => state.createRecommendedPlayer);
   const recommendedPlayers = usePlayerStore((state) => state.recommendedPlayers);
   const fetchRecommendedPlayer = usePlayerStore((state) => state.fetchRecommendedPlayer);
 
@@ -153,8 +107,42 @@ export default function PlayersView() {
       width: 160,
       renderCell: (params) => (
         <IconButton
-          onClick={() => {
-            console.log(params.row);
+          onClick={async () => {
+            if (value == 0) {
+              // delete top player
+              try {
+                const res = await instance.delete(`/player/delete-top-players/${params.row.id}`);
+                toast.success(res.data.message, {
+                  autoClose: 2000,
+                  pauseOnHover: false,
+                  closeOnClick: true,
+                });
+                await fetchTopPlayers();
+              } catch (error) {
+                toast.error(error.response.data.message, {
+                  autoClose: 2000,
+                  pauseOnHover: false,
+                  closeOnClick: true,
+                });
+              }
+            } else {
+              // delete recommended player
+              try {
+                const res = await instance.delete(`/player/delete-recommended-players/${params.row.id}`);
+                toast.success(res.data.message, {
+                  autoClose: 2000,
+                  pauseOnHover: false,
+                  closeOnClick: true,
+                });
+                await fetchRecommendedPlayer();
+              } catch (error) {
+                toast.error(error.response.data.message, {
+                  autoClose: 2000,
+                  pauseOnHover: false,
+                  closeOnClick: true,
+                });
+              }
+            }
 
             // createTopPlayers(params.row);
             // toggleTopPlayerDialogClick();
@@ -173,26 +161,6 @@ export default function PlayersView() {
 
     return Math.abs(ageDt.getUTCFullYear() - 1970);
   }
-
-  const toggleTopPlayerDialogClick = async () => {
-    setOpenTopPlayerDialog((prevState) => {
-      if (!prevState) {
-        // Only fetch if the dialog is being opened
-        getAllPlayer(1);
-      }
-      return !prevState;
-    });
-  };
-
-  const toggleRecommendedPlayerDialogClick = async () => {
-    setOpenRecommendedPlayerDialog((prevState) => {
-      if (!prevState) {
-        // Only fetch if the dialog is being opened
-        getAllPlayer(1);
-      }
-      return !prevState;
-    });
-  };
 
   useEffect(() => {
     fetchTopPlayers();
@@ -251,10 +219,6 @@ export default function PlayersView() {
       setLoading(false);
     }
   };
-
-  const Transition = forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
 
   return (
     <Container maxWidth="xl">
@@ -318,7 +282,7 @@ export default function PlayersView() {
               alignSelf: 'flex-end',
               p: 1,
             }}
-            onClick={toggleTopPlayerDialogClick}
+            onClick={() => router('/players/top-players-add')}
           >
             <IconButton
               sx={{
@@ -348,161 +312,8 @@ export default function PlayersView() {
               },
             }}
             pageSizeOptions={[5, 10]}
-            // checkboxSelection
-            // rowSelectionModel={selectedRows}
-            // onRowSelectionModelChange={(params) => {
-            //   setSelectedRows(params);
-            // }}
           />
         </div>
-
-        <Dialog
-          fullScreen
-          open={openTopPlayerDialog}
-          onClose={toggleTopPlayerDialogClick}
-          maxWidth="lg"
-          fullWidth
-          TransitionComponent={Transition}
-        >
-          {/* <DialogTitle>Data Table</DialogTitle> */}
-          <AppBar sx={{ position: 'relative' }}>
-            <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                onClick={toggleTopPlayerDialogClick}
-                aria-label="close"
-              >
-                {/* <IoMdClose /> */}
-              </IconButton>
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Player List
-              </Typography>
-              
-              <Button autoFocus color="inherit" onClick={toggleTopPlayerDialogClick}>
-                Close
-              </Button>
-            </Toolbar>
-          </AppBar>
-
-          <DialogContent>
-            <Paper>
-              <TableContainer style={{ maxHeight: 500 }}>
-                <Table
-                  stickyHeader
-                  aria-label="sticky table"
-                  sx={{
-                    maxHeight: 300,
-                    height: 300,
-                  }}
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Position</TableCell>
-                      <TableCell>Country</TableCell>
-                      <TableCell>Gender</TableCell>
-                      <TableCell>Batting style</TableCell>
-                      <TableCell>Bowling style</TableCell>
-                      <TableCell>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {playersList.length > 0 &&
-                      playersList.map((player) => (
-                        <TableRow key={player.id}>
-                          <TableCell
-                            component="th"
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              cursor: 'pointer',
-                              gap: 2,
-                            }}
-                          >
-                            <img
-                              src={player.image_path}
-                              style={{ width: 40, height: 40, borderRadius: '50%' }}
-                            />
-                            {player.fullname}
-                          </TableCell>
-                          <TableCell>{player.position.name}</TableCell>
-                          <TableCell
-                            component="th"
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              cursor: 'pointer',
-                              gap: 2,
-                            }}
-                          >
-                            <img src={player.country.image_path} style={{ width: 40 }} />
-                            {player.country.name}
-                          </TableCell>
-                          <TableCell>
-                            {player.gender == 'm'
-                              ? 'Male'
-                              : player.gender == 'f'
-                              ? 'Female'
-                              : 'Others'}
-                          </TableCell>
-                          <TableCell>{player.battingstyle || 'N/A'}</TableCell>
-                          <TableCell>{player.bowlingstyle || 'N/A'}</TableCell>
-                          <TableCell>
-                            <Button
-                              sx={{ p: 1 }}
-                              variant="contained"
-                              onClick={async () => {
-                                try {
-                                  const res = await createTopPlayers(
-                                    player.id,
-                                    player.position.name.toLowerCase()
-                                  );
-                                  fetchTopPlayers();
-                                  toggleTopPlayerDialogClick();
-                                } catch (err) {
-                                  console.log(err);
-                                }
-                              }}
-                            >
-                              Add
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-
-            {loading && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255, 255, 255, 0.7)',
-                  zIndex: 1,
-                }}
-              >
-                <CircularProgress />
-              </Box>
-            )}
-            <TablePagination
-              component="div"
-              onPageChange={handlePageChange}
-              page={controller.page}
-              count={playersCount}
-              rowsPerPage={controller.rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </DialogContent>
-        </Dialog>
       </CustomTabPanel>
 
       {/* recommended players */}
@@ -513,7 +324,7 @@ export default function PlayersView() {
             alignSelf: 'flex-end',
             p: 1,
           }}
-          onClick={toggleRecommendedPlayerDialogClick}
+          onClick={() => router('/players/recommended-players-add')}
         >
           <IconButton
             sx={{
@@ -542,44 +353,8 @@ export default function PlayersView() {
               },
             }}
             pageSizeOptions={[5, 10]}
-            checkboxSelection
           />
         </div>
-
-        <Dialog
-          fullScreen
-          open={openRecommendedPlayerDialog}
-          onClose={toggleRecommendedPlayerDialogClick}
-          // TransitionComponent={Transition}
-        >
-          <AppBar sx={{ position: 'relative' }}>
-            <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                onClick={toggleRecommendedPlayerDialogClick}
-                aria-label="close"
-              >
-                {/* <IoMdClose /> */}
-              </IconButton>
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Sound
-              </Typography>
-              <Button autoFocus color="inherit" onClick={toggleRecommendedPlayerDialogClick}>
-                save
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <List>
-            <ListItemButton>
-              <ListItemText primary="Phone ringtone" secondary="Titania" />
-            </ListItemButton>
-            <Divider />
-            <ListItemButton>
-              <ListItemText primary="Default notification ringtone" secondary="Tethys" />
-            </ListItemButton>
-          </List>
-        </Dialog>
       </CustomTabPanel>
     </Container>
   );
