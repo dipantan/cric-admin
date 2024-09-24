@@ -96,7 +96,7 @@ export default function BlogPage() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: 5,
+          // gap: 5,
         }}
       >
         <Typography variant="h4">Banners</Typography>
@@ -109,6 +109,7 @@ export default function BlogPage() {
           startIcon={<FaCloudUploadAlt />}
           sx={{
             alignSelf: 'flex-end',
+            marginBottom: '20px',
           }}
         >
           Upload banner
@@ -121,17 +122,32 @@ export default function BlogPage() {
 
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
           {data.map((item) => (
-            <Grid item xs={2} sm={4} md={4}>
-              <ImageListItem key={item.img}>
+            <Grid item xs={2} sm={4} md={4} key={item.id}>
+              <ImageListItem
+                key={item.img}
+                sx={{
+                  // padding: '5px',
+                  border: (theme) => `solid 1px ${theme.palette.divider}`,
+                  borderRadius: '5px',
+                }}
+              >
                 <img
                   srcSet={`${import.meta.env.VITE_BASE_URL}/${item.img}`}
                   src={`${import.meta.env.VITE_BASE_URL}/${item.img}`}
                   alt={item.name}
                   loading="lazy"
+                  placeholder="blur"
+                  onLoad={() => console.log('image loaded')}
+                  onError={() => console.log('image error')}
+                  style={{ objectFit: 'contain', height: 300}}
+                  he
                 />
                 <ImageListItemBar
                   title={item.name}
                   subtitle={item.date}
+                  sx={{
+                    padding: '5px',
+                  }}
                   actionIcon={
                     <IconButton
                       sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
