@@ -32,7 +32,6 @@ export default function RecommendedPlayersAddPage() {
   const createRecommendedPlayer = usePlayerStore((state) => state.createRecommendedPlayer);
 
   const handlePageChange = (_event, newPage) => {
-    console.log('New page:', newPage);
     setController({
       ...controller,
       page: newPage,

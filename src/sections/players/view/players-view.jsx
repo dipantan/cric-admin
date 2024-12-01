@@ -128,7 +128,9 @@ export default function PlayersView() {
             } else {
               // delete recommended player
               try {
-                const res = await instance.delete(`/player/delete-recommended-players/${params.row.id}`);
+                const res = await instance.delete(
+                  `/player/delete-recommended-players/${params.row.id}`
+                );
                 toast.success(res.data.message, {
                   autoClose: 2000,
                   pauseOnHover: false,
@@ -200,10 +202,6 @@ export default function PlayersView() {
       });
     }
   }, [message]);
-
-  useEffect(() => {
-    console.log('selectedRows', selectedRows);
-  }, [selectedRows]);
 
   const getAllPlayer = async (page) => {
     try {

@@ -17,6 +17,7 @@ export const Orders = lazy(() => import('src/pages/orders'));
 export const Transactions = lazy(() => import('src/pages/transactions'));
 export const Withdrawals = lazy(() => import('src/pages/withdrawals'));
 export const Prices = lazy(() => import('src/pages/prices'));
+export const Sections = lazy(() => import('src/pages/sections'));
 
 export const Banners = lazy(() => import('src/pages/banners'));
 
@@ -48,6 +49,7 @@ export default function Router() {
         { path: 'players/top-players-add', element: <TopPlayersAdd /> },
         { path: 'players/recommended-players-add', element: <RecommendedPlayersAdd /> },
         { path: 'banners', element: <Banners /> },
+        { path: 'sections', element: <Sections /> },
       ],
     },
     {

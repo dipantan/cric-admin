@@ -40,7 +40,6 @@ export default function Price() {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const handlePageChange = (_event, newPage) => {
-    console.log('New page:', newPage);
     setController({
       ...controller,
       page: newPage,
@@ -99,10 +98,6 @@ export default function Price() {
       console.log(error);
     }
   };
-
-  // useEffect(() => {
-  //   console.log(selectedPlayer);
-  // }, [selectedPlayer]);
 
   return (
     <Container maxWidth="xl">
@@ -291,9 +286,8 @@ export default function Price() {
             }}
           >
             <TextField
-              id="outlined-basic"
               defaultValue={selectedPlayer?.price}
-              label="Outlined"
+              label="Price"
               variant="outlined"
               style={{ margin: '10px', padding: 0 }}
               value={selectedPlayer?.price}

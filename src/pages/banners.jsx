@@ -137,8 +137,6 @@ export default function BlogPage() {
                   alt={item.name}
                   loading="lazy"
                   placeholder="blur"
-                  onLoad={() => console.log('image loaded')}
-                  onError={() => console.log('image error')}
                   style={{ objectFit: 'contain', height: 300}}
                   he
                 />

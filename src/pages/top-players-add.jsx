@@ -32,7 +32,6 @@ export default function TopPlayersAddPage() {
   const createTopPlayers = usePlayerStore((state) => state.createTopPlayers);
 
   const handlePageChange = (_event, newPage) => {
-    console.log('New page:', newPage);
     setController({
       ...controller,
       page: newPage,

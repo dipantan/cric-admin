@@ -3,7 +3,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import instance from 'src/helper/instance';
-import { fCurrency } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 
