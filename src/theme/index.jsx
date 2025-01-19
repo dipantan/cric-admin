@@ -13,18 +13,13 @@ import { customShadows } from './custom-shadows';
 // ----------------------------------------------------------------------
 
 export default function ThemeProvider({ children }) {
-  const memoizedValue = useMemo(
-    () => ({
-      palette: palette(),
-      typography,
-      shadows: shadows(),
-      customShadows: customShadows(),
-      shape: { borderRadius: 8 },
-    }),
-    []
-  );
-
-  const theme = createTheme(memoizedValue);
+  const theme = createTheme({
+    palette: palette(),
+    typography,
+    shadows: shadows(),
+    customShadows: customShadows(),
+    shape: { borderRadius: 8 },
+  });
 
   theme.components = overrides(theme);
 
